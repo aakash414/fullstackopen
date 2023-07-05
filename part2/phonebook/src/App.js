@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
+import Persons from "./components/Persons";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -10,7 +13,7 @@ const App = () => {
 
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
-  const [filterName, setFilterName] = useState("");
+  const [nameFilter, setNameFilter] = useState("");
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -22,47 +25,24 @@ const App = () => {
     setNewNumber("");
   };
 
-  const filteredPersons = persons.filter((person) =>
-    person.name.toLowerCase().includes(filterName.toLowerCase())
-  );
+  const handleNameFilterChange = (e) => setNameFilter(e.target.value);
+  const handleNameChange = (e) => setNewName(e.target.value);
+  const handleNewNumberChange = (event) => setNewNumber(event.target.value);
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with :{" "}
-        <input
-          value={filterName}
-          onChange={(event) => setFilterName(event.target.value)}
-        />
-      </div>
+      <Filter value={nameFilter} onChange={handleNameFilterChange} />
       <h2>Add New</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name:{" "}
-          <input
-            value={newName}
-            onChange={(event) => setNewName(event.target.value)}
-          />
-        </div>
-        <div>
-          number:{" "}
-          <input
-            value={newNumber}
-            onChange={(event) => setNewNumber(event.target.value)}
-          />
-        </div>
-
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        onSubmit={addPerson}
+        valueName={newName}
+        onChangeName={handleNameChange}
+        valueNumber={newNumber}
+        onChangeNumber={handleNewNumberChange}
+      />
       <h2>Numbers</h2>
-      {filteredPersons.map((person, i) => (
-        <div key={i}>
-          {person.name} {person.number}
-        </div>
-      ))}
+      <Persons persons={persons} nameFilter={nameFilter} />
     </div>
   );
 };
