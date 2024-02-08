@@ -16,7 +16,9 @@ const App = () => {
     if (persons.some((person) => person.name === newName))
       return alert(`${newName} is already present in the phonebook.`);
 
-    setPersons(persons.concat({ name: newName, number: newNumber }));
+    axios
+      .get("//localhost:3001/persons", { name: newName, number: newNumber })
+      .then((res) => setPersons(persons.concat(res.data)));
     setNewName("");
     setNewNumber("");
   };
