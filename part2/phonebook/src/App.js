@@ -1,8 +1,10 @@
+// App.js
+
 import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import personService from "./services/personService"; // Import the personService module
+import personService from "./services/personService";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,12 +12,19 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [nameFilter, setNameFilter] = useState("");
 
+  useEffect(() => {
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+    });
+  }, []);
+
   const addPerson = (event) => {
     event.preventDefault();
     if (persons.some((person) => person.name === newName))
       return alert(`${newName} is already present in the phonebook.`);
 
     const newPerson = { name: newName, number: newNumber };
+
     personService.create(newPerson).then((returnedPerson) => {
       setPersons(persons.concat(returnedPerson));
       setNewName("");
@@ -27,11 +36,13 @@ const App = () => {
   const handleNameChange = (e) => setNewName(e.target.value);
   const handleNewNumberChange = (event) => setNewNumber(event.target.value);
 
-  useEffect(() => {
-    personService.getAll().then((initialPersons) => {
-      setPersons(initialPersons);
-    });
-  }, []);
+  const handleDelete = (id) => {
+    if (window.confirm("Do you really want to delete this person?")) {
+      personService.remove(id).then(() => {
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+    }
+  };
 
   return (
     <div>
@@ -46,7 +57,7 @@ const App = () => {
         onChangeNumber={handleNewNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} nameFilter={nameFilter} />
+      <Persons persons={persons} nameFilter={nameFilter} onDelete={handleDelete} />
     </div>
   );
 };
