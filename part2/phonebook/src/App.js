@@ -20,29 +20,41 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    if (persons.some((person) => person.name === newName))
-      return alert(`${newName} is already present in the phonebook.`);
 
-    const newPerson = { name: newName, number: newNumber };
+    const existingPerson = persons.find((person) => person.name === newName);
 
-    personService.create(newPerson).then((returnedPerson) => {
-      setPersons(persons.concat(returnedPerson));
-      setNewName("");
-      setNewNumber("");
-    });
+    if (existingPerson) {
+      if (
+        window.confirm(
+          `${newName} is already present in the phonebook. Do you want to update the number?`
+        )
+      ) {
+        const updatedPerson = { ...existingPerson, number: newNumber };
+        personService
+          .update(existingPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== existingPerson.id ? person : returnedPerson
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+          });
+      }
+    } else {
+      const newPerson = { name: newName, number: newNumber };
+      personService.create(newPerson).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+      });
+    }
   };
 
   const handleNameFilterChange = (e) => setNameFilter(e.target.value);
   const handleNameChange = (e) => setNewName(e.target.value);
   const handleNewNumberChange = (event) => setNewNumber(event.target.value);
-
-  const handleDelete = (id) => {
-    if (window.confirm("Do you really want to delete this person?")) {
-      personService.remove(id).then(() => {
-        setPersons(persons.filter((person) => person.id !== id));
-      });
-    }
-  };
 
   return (
     <div>
@@ -57,7 +69,7 @@ const App = () => {
         onChangeNumber={handleNewNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} nameFilter={nameFilter} onDelete={handleDelete} />
+      <Persons persons={persons} nameFilter={nameFilter} />
     </div>
   );
 };
