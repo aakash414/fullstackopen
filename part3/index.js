@@ -27,6 +27,14 @@ let persons = [
   },
 ];
 
+morgan.token("body", (request) =>
+  request.method === "POST" ? JSON.stringify(request.body) : null
+);
+
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
+
 app.get("/info", (request, response) => {
   response.send(`
     <p>Phonebook has info for ${persons.length} people</p>
