@@ -9,7 +9,7 @@ if (process.argv.length < 3) {
 
 const password = process.argv[2];
 
-const url = `mongodb+srv://aakashpr1c2alo:ayyantholetcr@cluster0.seewvup.mongodb.net/?retryWrites=true&w=majority`;
+const url = `mongodb+srv://aakashpr1c2alo:${password}@cluster0.seewvup.mongodb.net/?retryWrites=true&w=majority`;
 
 mongoose.connect(url, {
   useNewUrlParser: true,
