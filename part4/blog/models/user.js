@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 
@@ -14,6 +15,12 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please provide a password"],
     minLength: [3, "password is too short"],
   },
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Blog",
+    },
+  ],
 });
 
 userSchema.plugin(uniqueValidator);
